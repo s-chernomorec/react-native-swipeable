@@ -142,10 +142,7 @@ export default class Swipeable extends PureComponent {
     rightButtonsCloseReleaseAnimationConfig: null,
 
     // base swipe lifecycle
-    handlePan: pan => ({
-      dx: pan.x,
-      dy: pan.y
-    }),
+    handlePan: gestureState => gestureState,
     onSwipeStart: noop,
     onSwipeMove: noop,
     onSwipeRelease: noop,
@@ -263,7 +260,10 @@ export default class Swipeable extends PureComponent {
 
   _unmounted = false;
 
-  _handlePan = Animated.event([null, this.props.handlePan(this.state.pan)]);
+  _handlePan = Animated.event([null, {
+    dx: this.state.pan.x,
+    dy: this.state.pan.y
+  }]);
 
   _handleMoveShouldSetPanResponder = (event, gestureState) => {
     const {swipeStartMinDistance, swipeStartMinLeftEdgeClearance, swipeStartMinRightEdgeClearance} = this.props;
@@ -326,7 +326,7 @@ export default class Swipeable extends PureComponent {
     let nextRightActionActivated = rightActionActivated;
     let nextRightButtonsActivated = rightButtonsActivated;
 
-    this._handlePan(event, gestureState);
+    this._handlePan(event, this.props.handlePan(gestureState));
     onSwipeMove(event, gestureState, this);
 
     if (!leftActionActivated && canSwipeRight && x >= leftActionActivationDistance) {
