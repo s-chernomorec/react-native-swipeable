@@ -72,7 +72,7 @@ export default class Swipeable extends PureComponent {
 
     // misc
     panValue: PropTypes.object,
-    processInterpolatedValueX: PropTypes.func,
+    valueXLimit: PropTypes.number,
     onRef: PropTypes.func,
     onPanAnimatedValueRef: PropTypes.func,
     swipeStartMinDistance: PropTypes.number,
@@ -155,7 +155,7 @@ export default class Swipeable extends PureComponent {
 
     // misc
     panValue: null,
-    processInterpolatedValueX: null,
+    valueXLimit: null,
     onRef: noop,
     onPanAnimatedValueRef: noop,
     swipeStartMinDistance: 15,
@@ -527,7 +527,7 @@ export default class Swipeable extends PureComponent {
   }
 
   _limitXValue(val) {
-    return this.props.processInterpolatedValueX ? this.props.processInterpolatedValueX(val) : val;
+    return Number.isFinite(valueXLimit) ? Math.max(valueXLimit, val) : val;
   }
 
   _getReleaseAnimationFn() {
