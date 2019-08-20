@@ -527,9 +527,7 @@ export default class Swipeable extends PureComponent {
   }
 
   _limitXValue(val) {
-    return this.props.processInterpolatedValueX
-      ? this.props.processInterpolatedValueX(this.props.panValueLimitX)
-      : val;
+    return this.props.processInterpolatedValueX ? this.props.processInterpolatedValueX(val) : val;
   }
 
   _getReleaseAnimationFn() {
@@ -654,7 +652,7 @@ export default class Swipeable extends PureComponent {
 
     return buttons.map((buttonContent, index) => {
       const outputMultiplier = -index / count;
-      const outputRange = isLeftButtons ? [0, rightEnd * outputMultiplier] : [leftEnd * outputMultiplier, 0];
+      const outputRange = isLeftButtons ? [0, this._limitXValue(rightEnd) * outputMultiplier] : [this._limitXValue(leftEnd) * outputMultiplier, 0];
       const transform = [{
         translateX: pan.x.interpolate({
           inputRange,
