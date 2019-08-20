@@ -646,13 +646,13 @@ export default class Swipeable extends PureComponent {
     const canSwipeLeft = this._canSwipeLeft();
     const canSwipeRight = this._canSwipeRight();
     const count = buttons.length;
-    const leftEnd = canSwipeLeft ? -width : 0;
-    const rightEnd = canSwipeRight ? width : 0;
-    const inputRange = isLeftButtons ? [0, this._limitXValue(rightEnd)] : [this._limitXValue(leftEnd), 0];
+    const leftEnd = canSwipeLeft ? -this._limitXValue(width) : 0;
+    const rightEnd = canSwipeRight ? this._limitXValue(width) : 0;
+    const inputRange = isLeftButtons ? [0, rightEnd] : [leftEnd, 0];
 
     return buttons.map((buttonContent, index) => {
       const outputMultiplier = -index / count;
-      const outputRange = isLeftButtons ? [0, this._limitXValue(rightEnd) * outputMultiplier] : [this._limitXValue(leftEnd) * outputMultiplier, 0];
+      const outputRange = isLeftButtons ? [0, rightEnd * outputMultiplier] : [leftEnd * outputMultiplier, 0];
       const transform = [{
         translateX: pan.x.interpolate({
           inputRange,
