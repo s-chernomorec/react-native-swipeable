@@ -527,7 +527,7 @@ export default class Swipeable extends PureComponent {
   }
 
   _limitXValue(val) {
-    return Number.isFinite(this.props.valueXLimit) ? Math.max(this.props.valueXLimit, val) : val;
+    return Number.isFinite(this.props.valueXLimit) ? Math.min(this.props.valueXLimit, val) : val;
   }
 
   _getReleaseAnimationFn() {
