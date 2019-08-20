@@ -72,9 +72,9 @@ export default class Swipeable extends PureComponent {
 
     // misc
     panValue: PropTypes.object,
+    processInterpolatedValueX: PropTypes.func,
     onRef: PropTypes.func,
     onPanAnimatedValueRef: PropTypes.func,
-    handlePan: PropTypes.func,
     swipeStartMinDistance: PropTypes.number,
     swipeStartMinLeftEdgeClearance: PropTypes.number,
     swipeStartMinRightEdgeClearance: PropTypes.number,
@@ -142,7 +142,6 @@ export default class Swipeable extends PureComponent {
     rightButtonsCloseReleaseAnimationConfig: null,
 
     // base swipe lifecycle
-    handlePan: gestureState => gestureState,
     onSwipeStart: noop,
     onSwipeMove: noop,
     onSwipeRelease: noop,
@@ -156,6 +155,7 @@ export default class Swipeable extends PureComponent {
 
     // misc
     panValue: null,
+    processInterpolatedValueX: null,
     onRef: noop,
     onPanAnimatedValueRef: noop,
     swipeStartMinDistance: 15,
@@ -326,7 +326,7 @@ export default class Swipeable extends PureComponent {
     let nextRightActionActivated = rightActionActivated;
     let nextRightButtonsActivated = rightButtonsActivated;
 
-    this._handlePan(event, this.props.handlePan(gestureState));
+    this._handlePan(event, gestureState);
     onSwipeMove(event, gestureState, this);
 
     if (!leftActionActivated && canSwipeRight && x >= leftActionActivationDistance) {
@@ -526,6 +526,12 @@ export default class Swipeable extends PureComponent {
     return !rightContent && rightButtons && rightButtons.length;
   }
 
+  _limitXValue(val) {
+    return this.props.processInterpolatedValueX
+      ? this.props.processInterpolatedValueX(this.props.panValueLimitX)
+      : val;
+  }
+
   _getReleaseAnimationFn() {
     const {
       leftActionReleaseAnimationFn,
@@ -644,7 +650,7 @@ export default class Swipeable extends PureComponent {
     const count = buttons.length;
     const leftEnd = canSwipeLeft ? -width : 0;
     const rightEnd = canSwipeRight ? width : 0;
-    const inputRange = isLeftButtons ? [0, rightEnd] : [leftEnd, 0];
+    const inputRange = isLeftButtons ? [0, this._limitXValue(rightEnd)] : [this._limitXValue(leftEnd), 0];
 
     return buttons.map((buttonContent, index) => {
       const outputMultiplier = -index / count;
@@ -688,10 +694,10 @@ export default class Swipeable extends PureComponent {
     const canSwipeRight = this._canSwipeRight();
     const transform = [{
       translateX: pan.x.interpolate({
-        inputRange: [canSwipeLeft ? -width : 0, canSwipeRight ? width : 0],
+        inputRange: [canSwipeLeft ? -this._limitXValue(width) : 0, canSwipeRight ? this._limitXValue(width) : 0],
         outputRange: [
-          canSwipeLeft ? -width + StyleSheet.hairlineWidth : 0,
-          canSwipeRight ? width - StyleSheet.hairlineWidth : 0
+          canSwipeLeft ? -this._limitXValue(width) + StyleSheet.hairlineWidth : 0,
+          canSwipeRight ? this._limitXValue(width) - StyleSheet.hairlineWidth : 0
         ],
         extrapolate: 'clamp'
       })
