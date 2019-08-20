@@ -71,8 +71,10 @@ export default class Swipeable extends PureComponent {
     swipeReleaseAnimationConfig: PropTypes.object,
 
     // misc
+    panValue: PropTypes.object,
     onRef: PropTypes.func,
     onPanAnimatedValueRef: PropTypes.func,
+    handlePan: PropTypes.func,
     swipeStartMinDistance: PropTypes.number,
     swipeStartMinLeftEdgeClearance: PropTypes.number,
     swipeStartMinRightEdgeClearance: PropTypes.number,
@@ -140,6 +142,10 @@ export default class Swipeable extends PureComponent {
     rightButtonsCloseReleaseAnimationConfig: null,
 
     // base swipe lifecycle
+    handlePan: pan => ({
+      dx: pan.x,
+      dy: pan.y
+    }),
     onSwipeStart: noop,
     onSwipeMove: noop,
     onSwipeRelease: noop,
@@ -152,6 +158,7 @@ export default class Swipeable extends PureComponent {
     },
 
     // misc
+    panValue: null,
     onRef: noop,
     onPanAnimatedValueRef: noop,
     swipeStartMinDistance: 15,
@@ -162,7 +169,7 @@ export default class Swipeable extends PureComponent {
   };
 
   state = {
-    pan: new Animated.ValueXY(),
+    pan: this.props.panValue || new Animated.ValueXY(),
     width: 0,
     lastOffset: {x: 0, y: 0},
     leftActionActivated: false,
@@ -256,10 +263,7 @@ export default class Swipeable extends PureComponent {
 
   _unmounted = false;
 
-  _handlePan = Animated.event([null, {
-    dx: this.state.pan.x,
-    dy: this.state.pan.y
-  }]);
+  _handlePan = Animated.event([null, this.props.handlePan(this.state.pan)]);
 
   _handleMoveShouldSetPanResponder = (event, gestureState) => {
     const {swipeStartMinDistance, swipeStartMinLeftEdgeClearance, swipeStartMinRightEdgeClearance} = this.props;
