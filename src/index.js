@@ -78,6 +78,7 @@ export default class Swipeable extends PureComponent {
     swipeStartMinDistance: PropTypes.number,
     swipeStartMinLeftEdgeClearance: PropTypes.number,
     swipeStartMinRightEdgeClearance: PropTypes.number,
+    bounceOnMount: PropTypes.bool,
     disable: PropTypes.bool,
 
     // styles
@@ -178,14 +179,14 @@ export default class Swipeable extends PureComponent {
       rightButtonsActivated: false,
       rightButtonsOpen: false
     };
+  }
 
+  componentDidMount() {
     const {onPanAnimatedValueRef, onRef} = this.props;
 
     onRef(this);
     onPanAnimatedValueRef(this.state.pan);
-  }
 
-  componentDidMount() {
     if (this.props.bounceOnMount) {
       setTimeout(this._bounceOnMount, 700);
     }
